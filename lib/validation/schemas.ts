@@ -29,6 +29,8 @@ export const onboardingSchema = z.object({
 
 export const clientSchema = z.object({
   name: z.string().min(1),
+  tax_id: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
   email: z.string().email().optional().nullable().or(z.literal("")),
   notes: z.string().optional().nullable(),

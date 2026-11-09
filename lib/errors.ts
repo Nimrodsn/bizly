@@ -7,7 +7,7 @@ export const USER_ERRORS = {
   ai: "שירות ה-AI אינו זמין כרגע. נסה שוב מאוחר יותר.",
 } as const;
 
-export function userErrorMessage(error: unknown, fallback = USER_ERRORS.generic): string {
+export function userErrorMessage(error: unknown, fallback: string = USER_ERRORS.generic): string {
   if (error instanceof Error && error.message.startsWith("USER:")) {
     return error.message.replace(/^USER:\s*/, "");
   }

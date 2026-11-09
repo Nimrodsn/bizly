@@ -3,17 +3,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-export async function loginWithGoogleAction() {
+export async function loginAction(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  if (!email || !password) redirect("/login?error=1");
   const supabase = await createClient();
-  const origin = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: `${origin}/auth/callback` },
-  });
-  if (error || !data.url) {
-    throw new Error("USER:לא ניתן להתחבר כרגע. נסה שוב.");
-  }
-  redirect(data.url);
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) redirect("/login?error=1");
+  redirect("/");
 }
 
 export async function logoutAction() {

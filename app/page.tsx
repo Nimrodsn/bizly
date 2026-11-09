@@ -14,5 +14,5 @@ export default async function HomePage() {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  redirect(business ? "/dashboard" : "/onboarding");
+  redirect(business ? "/receipts" : "/onboarding");
 }

@@ -5,6 +5,15 @@ import { deleteAccountAction } from "@/lib/actions/account";
 import { Button } from "@/components/ui/button";
 
 const links = [
+  { href: "/dashboard", label: "סיכום עסקי" },
+  { href: "/transactions", label: "כל התנועות" },
+  { href: "/suppliers", label: "ספקים" },
+  { href: "/cashflow", label: "תזרים" },
+  { href: "/reports", label: "דוחות" },
+  { href: "/tax", label: "מיסוי" },
+  { href: "/training-fund", label: "קרן השתלמות" },
+  { href: "/documents", label: "מסמכים" },
+  { href: "/ai", label: "עוזר AI" },
   { href: "/settings/business", label: "פרטי עסק" },
   { href: "/settings/activities", label: "תחומי פעילות" },
   { href: "/settings/categories", label: "קטגוריות הוצאה" },

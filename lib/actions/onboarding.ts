@@ -86,5 +86,5 @@ export async function completeOnboardingAction(formData: FormData) {
     .eq("id", user.id);
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect("/settings/business");
 }

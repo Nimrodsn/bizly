@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Bot,
+  Plus,
   FileText,
   LayoutDashboard,
   Receipt,
@@ -21,19 +21,13 @@ import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n/he";
 
 const items = [
-  { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
-  { href: "/transactions", label: t("nav.transactions"), icon: Receipt },
-  { href: "/income", label: t("nav.income"), icon: TrendingUp },
-  { href: "/expenses", label: t("nav.expenses"), icon: TrendingDown },
-  { href: "/clients", label: t("nav.clients"), icon: Users },
-  { href: "/suppliers", label: t("nav.suppliers"), icon: Truck },
-  { href: "/documents", label: t("nav.documents"), icon: FolderOpen },
-  { href: "/cashflow", label: t("nav.cashflow"), icon: Wallet },
-  { href: "/reports", label: t("nav.reports"), icon: BarChart3 },
-  { href: "/training-fund", label: t("nav.trainingFund"), icon: Landmark },
-  { href: "/tax", label: t("nav.tax"), icon: FileText },
-  { href: "/ai", label: t("nav.ai"), icon: Bot },
-  { href: "/settings", label: t("nav.settings"), icon: Settings },
+  { href: "/receipts", label: "קבלות", icon: FileText },
+  { href: "/receipts/new", label: "קבלה חדשה", icon: Plus },
+  { href: "/clients", label: "לקוחות", icon: Users },
+  { href: "/income", label: "הכנסות", icon: TrendingUp },
+  { href: "/expenses", label: "הוצאות", icon: TrendingDown },
+  { href: "/dashboard", label: "סיכום", icon: LayoutDashboard },
+  { href: "/settings", label: "הגדרות", icon: Settings },
 ];
 
 export function SidebarNav() {
@@ -42,11 +36,11 @@ export function SidebarNav() {
     <aside className="hidden w-64 shrink-0 border-l border-slate-200 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/80 lg:block">
       <div className="mb-8 px-2">
         <p className="text-lg font-semibold tracking-tight">Bizly</p>
-        <p className="text-xs text-slate-500">{t("app.tagline")}</p>
+        <p className="text-xs text-slate-500">קבלות לעוסק פטור</p>
       </div>
       <nav className="flex flex-col gap-1">
         {items.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
+          const active = pathname === href || (href !== "/receipts" && href !== "/receipts/new" ? pathname.startsWith(`${href}/`) : href === "/receipts" ? pathname.startsWith("/receipts/") && pathname !== "/receipts/new" : false);
           return (
             <Link
               key={href}

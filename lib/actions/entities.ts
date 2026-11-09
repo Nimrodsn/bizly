@@ -9,6 +9,8 @@ export async function createClientAction(formData: FormData) {
   const ctx = await requireBusinessContext();
   const parsed = clientSchema.safeParse({
     name: formData.get("name"),
+    tax_id: formData.get("tax_id"),
+    address: formData.get("address"),
     phone: formData.get("phone"),
     email: formData.get("email"),
     notes: formData.get("notes"),

@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Plus, Receipt, BarChart3, MoreHorizontal } from "lucide-react";
+import { FileText, Plus, TrendingUp, Users, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n/he";
 
 const main = [
-  { href: "/dashboard", label: t("nav.home"), icon: LayoutDashboard },
-  { href: "/transactions", label: t("nav.transactions"), icon: Receipt },
-  { href: "/quick-add", label: t("nav.add"), icon: Plus, highlight: true },
-  { href: "/reports", label: t("nav.reports"), icon: BarChart3 },
-  { href: "/settings", label: t("nav.more"), icon: MoreHorizontal },
+  { href: "/receipts", label: "קבלות", icon: FileText },
+  { href: "/clients", label: "לקוחות", icon: Users },
+  { href: "/receipts/new", label: "קבלה חדשה", icon: Plus, highlight: true },
+  { href: "/income", label: "הכנסות", icon: TrendingUp },
+  { href: "/settings", label: "הגדרות", icon: MoreHorizontal },
 ];
 
 export function MobileNav() {

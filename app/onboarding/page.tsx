@@ -32,7 +32,7 @@ export default async function OnboardingPage() {
           <form action={completeOnboardingAction} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="businessName">{t("onboarding.stepBusiness")}</Label>
-              <Input id="businessName" name="businessName" required placeholder="שם העסק" />
+              <Input id="businessName" name="businessName" required placeholder="שם העסק כפי שיופיע בקבלה" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="activities">{t("onboarding.stepActivities")}</Label>

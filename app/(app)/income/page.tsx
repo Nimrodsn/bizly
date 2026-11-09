@@ -7,14 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatDateHe, formatIls } from "@/lib/format";
 import { EmptyState } from "@/components/shell/empty-state";
 import { t } from "@/lib/i18n/he";
-import { ReceiptButton } from "@/components/income/receipt-button";
 
 export default async function IncomePage() {
   const ctx = await requireBusinessContext();
   const supabase = await createClient();
   const { data: rows } = await supabase
     .from("income_transactions")
-    .select("id, amount, transaction_date, description, status")
+    .select("id, amount, transaction_date, description, status, receipt_number")
     .eq("business_id", ctx.businessId)
     .is("deleted_at", null)
     .order("transaction_date", { ascending: false })
@@ -48,7 +47,7 @@ export default async function IncomePage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <p className="font-semibold text-emerald-600">{formatIls(Number(row.amount))}</p>
-                  <ReceiptButton incomeId={row.id} />
+                  {row.receipt_number ? <span className="rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-800">קבלה {row.receipt_number}</span> : null}
                 </div>
               </CardContent>
             </Card>

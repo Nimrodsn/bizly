@@ -12,7 +12,7 @@ export default async function ClientsPage() {
   const supabase = await createClient();
   const { data: clients } = await supabase
     .from("clients")
-    .select("id, name, phone, email")
+    .select("id, name, phone, email, tax_id, address")
     .eq("business_id", ctx.businessId)
     .eq("active", true);
 
@@ -25,7 +25,7 @@ export default async function ClientsPage() {
             <Card key={c.id}>
               <CardContent className="py-4">
                 <p className="font-medium">{c.name}</p>
-                <p className="text-xs text-slate-500">{c.phone ?? c.email ?? ""}</p>
+                <p className="text-xs text-slate-500">{[c.tax_id, c.address, c.phone, c.email].filter(Boolean).join(" · ")}</p>
               </CardContent>
             </Card>
           ))}
@@ -38,6 +38,14 @@ export default async function ClientsPage() {
             <div>
               <Label htmlFor="name">שם</Label>
               <Input id="name" name="name" required />
+            </div>
+            <div>
+              <Label htmlFor="tax_id">ת.ז / ח.פ</Label>
+              <Input id="tax_id" name="tax_id" inputMode="numeric" />
+            </div>
+            <div>
+              <Label htmlFor="address">כתובת</Label>
+              <Input id="address" name="address" />
             </div>
             <div>
               <Label htmlFor="phone">טלפון</Label>
