@@ -8,6 +8,7 @@ import { getOrCreateStoredPdf } from "@/lib/receipts/pdf-service";
 import type { ReceiptRow } from "@/lib/receipts/constants";
 
 const receiptSchema = z.object({
+  request_id: z.string().uuid(),
   issue_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   client_id: z.string().uuid().nullable(),
   save_client: z.boolean(),
@@ -26,6 +27,7 @@ const INVALID = "USER:יש לתקן את השדות המסומנים.";
 export async function issueReceiptAction(formData: FormData): Promise<{ id: string }> {
   const ctx = await requireBusinessContext();
   const parsed = receiptSchema.safeParse({
+    request_id: formData.get("request_id"),
     issue_date: formData.get("issue_date"),
     client_id: formData.get("client_id") || null,
     save_client: formData.get("save_client") === "on",
@@ -48,6 +50,9 @@ export async function issueReceiptAction(formData: FormData): Promise<{ id: stri
     .eq("id", ctx.businessId)
     .single();
   if (!biz?.tax_id) throw new Error("USER:יש להזין מספר עוסק (ת.ז.) בהגדרות העסק לפני הנפקת קבלה.");
+
+  const { data: prior } = await supabase.from("receipts").select("id").eq("business_id", ctx.businessId).eq("request_id", v.request_id).maybeSingle();
+  if (prior) return { id: prior.id };
 
   // Create or update the client record so the picker stays useful.
   let clientId = v.client_id;
@@ -77,6 +82,7 @@ export async function issueReceiptAction(formData: FormData): Promise<{ id: stri
   }
 
   const { data, error } = await supabase.rpc("issue_receipt", {
+    p_request_id: v.request_id,
     p_business_id: ctx.businessId,
     p_issue_date: v.issue_date,
     p_client_id: clientId,

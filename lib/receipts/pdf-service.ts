@@ -25,7 +25,7 @@ export function toPdfData(r: ReceiptRow, opts: { copy?: boolean; footer?: string
     amount: Number(r.amount),
     paymentMethod: r.payment_method,
     paymentDetails: r.payment_details,
-    footer: opts.footer,
+    footer: r.issuer_footer ?? opts.footer,
     cancelled: r.status === "cancelled",
     copy: opts.copy,
   };
@@ -55,7 +55,15 @@ export async function getOrCreateStoredPdf(
   const { error: upErr } = await supabase.storage
     .from("business-documents")
     .upload(path, bytes, { contentType: "application/pdf", upsert: false });
-  if (upErr && !/exists|duplicate/i.test(upErr.message)) throw new Error("USER:שמירת קובץ ה-PDF נכשלה.");
+  if (upErr) {
+    if (!/exists|duplicate/i.test(upErr.message)) throw new Error("USER:שמירת קובץ ה-PDF נכשלה.");
+    const { data: stored, error } = await supabase.storage.from("business-documents").download(path);
+    if (error || !stored) throw new Error("USER:טעינת הקבלה נכשלה.");
+    const existing = new Uint8Array(await stored.arrayBuffer());
+    const sha = createHash("sha256").update(existing).digest("hex");
+    await supabase.from("receipts").update({ pdf_path: path, pdf_sha256: sha }).eq("id", r.id).is("pdf_path", null);
+    return existing;
+  }
   if (!r.pdf_path) {
     const sha = createHash("sha256").update(bytes).digest("hex");
     await supabase.from("receipts").update({ pdf_path: path, pdf_sha256: sha }).eq("id", r.id).is("pdf_path", null);

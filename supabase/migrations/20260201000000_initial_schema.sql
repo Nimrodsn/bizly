@@ -1,4 +1,5 @@
 -- Bizly initial schema
+SET check_function_bodies = false;
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- Enums

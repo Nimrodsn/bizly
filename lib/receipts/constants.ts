@@ -9,6 +9,7 @@ export const PAYMENT_METHODS = [
 ] as const;
 
 export type ReceiptRow = {
+  issuer_footer?: string | null;
   id: string;
   business_id: string;
   seq: number;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { issueReceiptAction } from "@/lib/actions/receipts";
@@ -31,6 +31,7 @@ export function ReceiptForm({
   nextNumber: string;
 }) {
   const router = useRouter();
+  const requestId = useRef<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [clientId, setClientId] = useState("");
   const [name, setName] = useState("");
@@ -60,7 +61,10 @@ export function ReceiptForm({
       className="space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
+        if (pending) return;
         const fd = new FormData(e.currentTarget);
+        requestId.current ??= crypto.randomUUID();
+        fd.set("request_id", requestId.current);
         startTransition(async () => {
           try {
             const { id } = await issueReceiptAction(fd);
