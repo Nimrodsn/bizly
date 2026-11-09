@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
 
 const publicPaths = ["/login", "/auth/callback"];
-const businessPaths = ["/onboarding", "/settings/business"]; // setup routes a new user may open
+const businessPaths = ["/onboarding", "/settings", "/settings/business", "/api", "/quick-add", "/notifications"]; // setup/business routes; legacy pages redirect server-side until business exists
 
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && !isPublic) {
+  if (user && !isPublic && pathname !== "/") {
     const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
       cookies: {
         getAll() { return request.cookies.getAll(); },
