@@ -14,7 +14,7 @@ export default async function OnboardingPage() {
     .select("id")
     .eq("user_id", user.id)
     .maybeSingle();
-  if (business) redirect("/dashboard");
+  if (business) redirect("/receipts");
 
   const defaultActivities = `${t("onboarding.defaultActivityMath")}\n${t("onboarding.defaultActivityFitness")}`;
 

@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
 
 const publicPaths = ["/login", "/auth/callback"];
-const businessPaths = ["/onboarding", "/settings/business"];
+const businessPaths = ["/onboarding", "/settings/business"]; // setup routes a new user may open
 
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && (pathname === "/login" || (!isPublic && !businessPaths.some((p) => pathname.startsWith(p))))) {
+  if (user && !isPublic) {
     const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
       cookies: {
         getAll() { return request.cookies.getAll(); },
@@ -25,25 +25,19 @@ export async function middleware(request: NextRequest) {
       },
     });
     const { data: business } = await supabase.from("businesses").select("id").eq("user_id", user.id).maybeSingle();
-    if (!business && pathname !== "/onboarding") {
+    if (!business && pathname !== "/onboarding" && !businessPaths.some((p) => pathname.startsWith(p))) {
       const url = request.nextUrl.clone();
       url.pathname = "/onboarding";
       url.search = "";
       return NextResponse.redirect(url);
     }
-    if (business && pathname === "/onboarding") {
+    if (business && (pathname === "/onboarding" || pathname === "/login" || pathname === "/")) {
       const url = request.nextUrl.clone();
       url.pathname = "/receipts";
       url.search = "";
       return NextResponse.redirect(url);
     }
   }
-  if (user && pathname === "/login") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/receipts";
-    return NextResponse.redirect(url);
-  }
-
   return supabaseResponse;
 }
 
