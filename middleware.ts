@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const publicPaths = ["/login", "/auth/callback"];
+const publicPaths = ["/login", "/auth/callback", "/forgot-password", "/reset-password"];
 const businessPaths = ["/onboarding", "/settings", "/settings/business", "/api", "/quick-add", "/notifications"]; // setup/business routes; legacy pages redirect server-side until business exists
 
 export async function middleware(request: NextRequest) {
