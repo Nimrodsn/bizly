@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { loginAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,10 +24,19 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <Label htmlFor="password">סיסמה</Label>
               <Input id="password" name="password" type="password" dir="ltr" className="text-right" autoComplete="current-password" required />
             </div>
-            {error ? <p className="text-sm text-red-600">אימייל או סיסמה שגויים.</p> : null}
+            {error === "auth" ? (
+              <p className="text-sm text-red-600">הקישור לאיפוס הסיסמה פג תוקף או לא תקין. בקש קישור חדש.</p>
+            ) : error ? (
+              <p className="text-sm text-red-600">אימייל או סיסמה שגויים.</p>
+            ) : null}
             <Button type="submit" className="w-full" size="lg">
               כניסה
             </Button>
+            <div className="text-center">
+              <Link href="/forgot-password" className="text-sm text-slate-600 underline hover:text-slate-900">
+                שכחתי סיסמה
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>
