@@ -1,10 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
 
 const publicPaths = ["/login", "/auth/callback", "/forgot-password", "/reset-password"];
-const businessPaths = ["/onboarding", "/settings", "/settings/business", "/api", "/quick-add", "/notifications"]; // setup/business routes; legacy pages redirect server-side until business exists
 
+// Auth-only middleware: session refresh + login gate.
+// Business-existence redirects are handled by the (app) layout,
+// the onboarding page and the root/login pages, so no extra DB query here.
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
   const { pathname } = request.nextUrl;
@@ -17,27 +18,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && !isPublic && pathname !== "/") {
-    const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
-      cookies: {
-        getAll() { return request.cookies.getAll(); },
-        setAll() { /* checked immediately; response cookies handled by updateSession */ },
-      },
-    });
-    const { data: business } = await supabase.from("businesses").select("id").eq("user_id", user.id).maybeSingle();
-    if (!business && pathname !== "/onboarding" && !businessPaths.some((p) => pathname.startsWith(p))) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/onboarding";
-      url.search = "";
-      return NextResponse.redirect(url);
-    }
-    if (business && (pathname === "/onboarding" || pathname === "/login" || pathname === "/")) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/receipts";
-      url.search = "";
-      return NextResponse.redirect(url);
-    }
-  }
   return supabaseResponse;
 }
 
