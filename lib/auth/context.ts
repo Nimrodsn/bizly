@@ -32,21 +32,25 @@ export const requireUser = cache(async function requireUser() {
 export const getBusinessContext = cache(async function getBusinessContext(): Promise<BusinessContext | null> {
   const { supabase, user } = await requireUser();
 
-  const { data: business } = await supabase
-    .from("businesses")
-    .select(
-      "id, name, tax_year, tax_status, income_tax_status, default_currency, receipt_prefix, receipt_next_number",
-    )
-    .eq("user_id", user.id)
-    .maybeSingle();
+  // Business and profile queries are independent — run them in parallel.
+  const [businessRes, profileRes] = await Promise.all([
+    supabase
+      .from("businesses")
+      .select(
+        "id, name, tax_year, tax_status, income_tax_status, default_currency, receipt_prefix, receipt_next_number",
+      )
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .single(),
+  ]);
+  const business = businessRes.data;
+  const profile = profileRes.data;
 
   if (!business) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("onboarding_completed")
-    .eq("id", user.id)
-    .single();
 
   return {
     userId: user.id,
