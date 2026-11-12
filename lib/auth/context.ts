@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 export type BusinessContext = {
   userId: string;
@@ -19,16 +20,16 @@ export type BusinessContext = {
   };
 };
 
-export async function requireUser() {
+export const requireUser = cache(async function requireUser() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   return { supabase, user };
-}
+});
 
-export async function getBusinessContext(): Promise<BusinessContext | null> {
+export const getBusinessContext = cache(async function getBusinessContext(): Promise<BusinessContext | null> {
   const { supabase, user } = await requireUser();
 
   const { data: business } = await supabase
@@ -53,7 +54,7 @@ export async function getBusinessContext(): Promise<BusinessContext | null> {
     business,
     profile: profile ?? { onboarding_completed: false },
   };
-}
+});
 
 export async function requireBusinessContext(): Promise<BusinessContext> {
   const ctx = await getBusinessContext();
